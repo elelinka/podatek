@@ -8,7 +8,6 @@ public class UserInputService {
     public static final int MAX_INCOME = 85528;
 
     public static String getIncomeFromUser() throws InputMismatchException {
-
         Scanner input = new Scanner(System.in);
         double income = input.nextDouble();
         input.nextLine();
