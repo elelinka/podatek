@@ -1,32 +1,25 @@
 package com.example.podatek.service;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.InputMismatchException;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class UserInputService {
 
-    public static final int MAX_INCOME = 85528;
-
     public static String getIncomeFromUser() throws InputMismatchException {
-        Scanner input = new Scanner(System.in);
-        double income = input.nextDouble();
+        TaxService taxService = new TaxService();
+        Scanner input = new Scanner(System.in).useLocale(Locale.US);
+        BigDecimal income = BigDecimal.valueOf(input.nextDouble());
         input.nextLine();
         input.close();
 
-        int tax = getTax(income);
-        return "Podatek do zapłaty (w zaokrągleniu do pełnych zł): " + tax;
-    }
+        BigDecimal roundedIncome = income.round(new MathContext(income.toBigInteger().toString().length(), RoundingMode.HALF_UP));
+        BigDecimal tax = taxService.getTax(roundedIncome);
+        BigDecimal roundedTax = tax.round(new MathContext(tax.toBigInteger().toString().length(), RoundingMode.HALF_UP));
 
-    private static int getTax(double income) {
-        TaxService taxService = new TaxService();
-        int tax;
-
-        if (income <= MAX_INCOME) {
-            tax = taxService.countTaxForLessIncome((int) income);
-            return tax;
-        } else {
-            tax = taxService.countTaxForGreaterIncome((int) income);
-            return tax;
-        }
+        return "Podatek do zapłaty (w zaokrągleniu do pełnych zł): " + roundedTax.toPlainString();
     }
 }
